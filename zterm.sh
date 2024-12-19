@@ -1,219 +1,171 @@
 #!/bin/bash
 
-# Print the initial ASCII art and info
-clear
-echo "________ ________"
-echo "|        \\|        \\"
-echo " \\$$$$$$$$ \\$$$$$$$$______    ______   ______ ____"
-echo "    /  $$    | $$  /      \\  /      \\ |      \\    \\"
-echo "   /  $$     | $$ |  $$$$$$\\|  $$$$$$\\| $$$$$$\\$$$$\\"
-echo "  /  $$      | $$ | $$    $$| $$   \\$$| $$ | $$ | $$"
-echo " /  $$___    | $$ | $$$$$$$$| $$      | $$ | $$ | $$"
-echo "|  $$    \\   | $$  \\$$     \\| $$      | $$ | $$ | $$"
-echo " \\$$$$$$$$    \\$$   \\$$$$$$$ \\$$       \\$$  \\$$  \\$$"
-echo
-echo "Type 'help' for a list of commands"
+# Function to set colors
+set_color() {
+    case $1 in
+        "red") echo -e "\e[31m" ;;     # Red
+        "green") echo -e "\e[32m" ;;   # Green
+        "yellow") echo -e "\e[33m" ;;  # Yellow
+        "blue") echo -e "\e[34m" ;;    # Blue
+        "purple") echo -e "\e[35m" ;;  # Purple
+        "cyan") echo -e "\e[36m" ;;    # Cyan
+        "white") echo -e "\e[37m" ;;   # White
+        *) echo -e "\e[0m" ;;          # Default (reset)
+    esac
+}
 
-# Function for the Number Guessing Game
-number_guessing_game() {
-    local secret=$(( RANDOM % 100 + 1 ))
-    local guess=0
-    local attempts=0
+# Reset color to default
+reset_color() {
+    echo -e "\e[0m"
+}
 
-    echo "Welcome to the Number Guessing Game! Guess a number between 1 and 100."
+# Function to print ASCII Art
+print_ascii_art() {
+    echo -e "\e[34m" # Blue text color
+    echo "________ ________"
+    echo "|        \|        \"
+    echo " \$$$$$$$$ \$$$$$$$$______    ______   ______ ____"
+    echo "    /  $$    | $$  /      \  /      \ |      \    \ "
+    echo "   /  $$     | $$ |  $$$$$$\|  $$$$$$\| $$$$$$\$$$$\"
+    echo "  /  $$      | $$ | $$    $$| $$   \$$| $$ | $$ | $$"
+    echo " /  $$___    | $$ | $$$$$$$$| $$      | $$ | $$ | $$"
+    echo "|  $$    \   | $$  \$$     \| $$      | $$ | $$ | $$"
+    echo " \$$$$$$$$    \$$   \$$$$$$$ \$$       \$$  \$$  \$$"
+    reset_color
+}
 
-    while [[ $guess -ne $secret ]]; do
-        read -p "Enter your guess: " guess
-        ((attempts++))
+# Function to display info
+show_info() {
+    echo -e "\e[32m" # Green color
+    echo "Type 'help' for a list of commands"
+    reset_color
+}
 
-        if [[ $guess -lt $secret ]]; then
-            echo "Too low! Try again."
-        elif [[ $guess -gt $secret ]]; then
-            echo "Too high! Try again."
-        else
-            echo "Congratulations! You guessed the number in $attempts attempts."
-        fi
+# Custom prompt format
+set_prompt() {
+    PS1="┌──(\u㉿\h)-[\w]$(tput sgr0)\n└─$ "
+}
+
+# Function to clear the screen
+clear_command() {
+    clear
+}
+
+# Function to show current time
+show_time() {
+    date +"%T"
+}
+
+# Function to show current date
+show_date() {
+    date +"%D"
+}
+
+# Function to show system info
+sysinfo_command() {
+    echo -e "\e[36mSystem Information:\e[0m"
+    uname -a
+}
+
+# Function to show network information
+network_info() {
+    echo -e "\e[36mNetwork Information:\e[0m"
+    ifconfig
+}
+
+# Function for simple calculator
+calc_command() {
+    echo -n "Enter an expression to calculate: "
+    read expr
+    echo "Result: $(($expr))"
+}
+
+# Function to display the weather (mocked for now)
+weather_command() {
+    echo "Weather: Sunny, 25°C"
+}
+
+# Function for uptime
+uptime_command() {
+    uptime
+}
+
+# Function to display a random joke
+joke_command() {
+    echo "Why don’t skeletons fight each other? They don’t have the guts."
+}
+
+# Function to display fortune (mocked for now)
+fortune_command() {
+    echo "A random fortune: You will have a pleasant surprise soon!"
+}
+
+# Function to display available commands
+help_command() {
+    echo -e "\e[32mAvailable commands:"
+    echo "  help        - Show this list of commands"
+    echo "  clear       - Clear the screen"
+    echo "  exit        - Exit ZTerm"
+    echo "  time        - Show current time"
+    echo "  date        - Show current date"
+    echo "  calc        - Simple calculator"
+    echo "  sysinfo     - Show system info"
+    echo "  network     - Show network information"
+    echo "  weather     - Show weather information"
+    echo "  uptime      - Show system uptime"
+    echo "  joke        - Show a random joke"
+    echo "  fortune     - Show a random fortune"
+    echo "  echo        - Echo text with delay"
+    echo "  color       - Change text color"
+    echo "  roll        - Dice Roller Game"
+    echo "  hangman     - Hangman Game"
+    echo "  snake       - Snake Game (ASCII)"
+    echo "  tictactoe   - Tic Tac Toe"
+    reset_color
+}
+
+# Echo command with delay
+echo_with_delay() {
+    echo -n "Enter the number of times to echo: "
+    read num
+    echo -n "Enter a message: "
+    read message
+    echo -n "Enter the delay in seconds (default is 1): "
+    read delay
+    delay=${delay:-1} # Default delay is 1 second
+    for i in $(seq 1 $num); do
+        echo -e "$message"
+        sleep $delay
     done
 }
 
-# Function for the Dice Roll Game
-dice_roll() {
-    local result=$(( RANDOM % 6 + 1 ))
-    echo "You rolled a $result!"
-}
-
-# Function for the Rock, Paper, Scissors Game
-rock_paper_scissors() {
-    echo "Welcome to Rock, Paper, Scissors!"
-    echo "Type 'rock', 'paper', or 'scissors'."
-    
-    read -p "Your move: " user_choice
-    choices=("rock" "paper" "scissors")
-    computer_choice=${choices[$(( RANDOM % 3 ))]}
-
-    echo "Computer chose: $computer_choice"
-    
-    if [[ $user_choice == $computer_choice ]]; then
-        echo "It's a tie!"
-    elif [[ ($user_choice == "rock" && $computer_choice == "scissors") ||
-            ($user_choice == "paper" && $computer_choice == "rock") ||
-            ($user_choice == "scissors" && $computer_choice == "paper") ]]; then
-        echo "You win!"
-    else
-        echo "You lose!"
-    fi
-}
-
-# Function for Hangman Game
-hangman_game() {
-    local word="coding"
-    local guessed_word=$(echo "$word" | sed 's/./_/g')
-    local tries=6
-    local guessed_letters=""
-
-    echo "Welcome to Hangman!"
-    echo "Try to guess the word. You have $tries tries."
-    echo "$guessed_word"
-
-    while [[ $tries -gt 0 && "$guessed_word" != "$word" ]]; do
-        read -p "Guess a letter: " letter
-
-        if [[ "$guessed_letters" == *"$letter"* ]]; then
-            echo "You've already guessed that letter!"
-            continue
-        fi
-
-        guessed_letters+="$letter"
-
-        if [[ "$word" == *"$letter"* ]]; then
-            echo "Good guess!"
-            guessed_word=$(echo "$word" | sed "s/[^$guessed_letters]/_/g")
-        else
-            ((tries--))
-            echo "Incorrect guess! You have $tries tries left."
-        fi
-
-        echo "$guessed_word"
-    done
-
-    if [[ "$guessed_word" == "$word" ]]; then
-        echo "Congratulations! You've guessed the word!"
-    else
-        echo "Game over! The word was $word."
-    fi
-}
-
-# Function for Tic-Tac-Toe Game
-tictactoe_game() {
-    echo "Welcome to Tic-Tac-Toe!"
-    echo "Player 1 is X, Player 2 is O"
-    # Implement Tic-Tac-Toe logic here (this is a simplified version)
-
-    board=("1" "2" "3" "4" "5" "6" "7" "8" "9")
-    current_player="X"
-
-    print_board() {
-        echo -e "${board[0]} | ${board[1]} | ${board[2]}"
-        echo "---------"
-        echo -e "${board[3]} | ${board[4]} | ${board[5]}"
-        echo "---------"
-        echo -e "${board[6]} | ${board[7]} | ${board[8]}"
-    }
-
-    make_move() {
-        local move
-        while true; do
-            read -p "Player $current_player, choose a position (1-9): " move
-            if [[ ${board[$((move - 1))]} != "X" && ${board[$((move - 1))]} != "O" && $move -ge 1 && $move -le 9 ]]; then
-                board[$((move - 1))]=$current_player
-                break
-            else
-                echo "Invalid move. Try again."
-            fi
-        done
-    }
-
-    check_winner() {
-        local lines=(
-            "0 1 2" "3 4 5" "6 7 8"
-            "0 3 6" "1 4 7" "2 5 8"
-            "0 4 8" "2 4 6"
-        )
-        for line in "${lines[@]}"; do
-            set -- $line
-            if [[ ${board[$1]} == ${board[$2]} && ${board[$2]} == ${board[$3]} ]]; then
-                echo "Player $current_player wins!"
-                return 1
-            fi
-        done
-        return 0
-    }
-
-    while true; do
-        print_board
-        make_move
-        if check_winner; then
-            print_board
-            break
-        fi
-        current_player="X"
-        if [[ $current_player == "X" ]]; then
-            current_player="O"
-        else
-            current_player="X"
-        fi
-    done
-}
-
-# Main command loop
+# Main ZTerm Loop
 while true; do
+    set_prompt
+    print_ascii_art
+    show_info
     echo -n "ZTerm> "
-    read command
+    read cmd
 
-    case $command in
-        help)
-            echo "Available commands:"
-            echo "  help        - Show this list of commands"
-            echo "  clear       - Clear the screen"
-            echo "  exit        - Exit ZTerm"
-            echo "  time        - Show current time"
-            echo "  date        - Show current date"
-            echo "  guess       - Number Guessing Game"
-            echo "  rockpaperscissors - Rock, Paper, Scissors"
-            echo "  roll        - Dice Roller Game"
-            echo "  hangman     - Hangman Game"
-            echo "  snake       - Snake Game (ASCII)"
-            echo "  tictactoe   - Tic Tac Toe"
-            ;;
-        clear)
-            clear
-            ;;
-        exit)
-            exit
-            ;;
-        time)
-            date +"%T"
-            ;;
-        date)
-            date +"%Y-%m-%d"
-            ;;
-        guess)
-            number_guessing_game
-            ;;
-        roll)
-            dice_roll
-            ;;
-        rockpaperscissors)
-            rock_paper_scissors
-            ;;
-        hangman)
-            hangman_game
-            ;;
-        tictactoe)
-            tictactoe_game
-            ;;
-        *)
-            echo "Unknown command: $command. Type 'help' for a list of commands."
-            ;;
+    case $cmd in
+        help) help_command ;;
+        clear) clear_command ;;
+        exit) exit ;;
+        time) show_time ;;
+        date) show_date ;;
+        calc) calc_command ;;
+        sysinfo) sysinfo_command ;;
+        network) network_info ;;
+        weather) weather_command ;;
+        uptime) uptime_command ;;
+        joke) joke_command ;;
+        fortune) fortune_command ;;
+        echo) echo_with_delay ;;
+        color) color_command ;;
+        roll) echo "Dice Roller Game is coming soon!" ;;
+        hangman) echo "Hangman Game is coming soon!" ;;
+        snake) echo "Snake Game is coming soon!" ;;
+        tictactoe) echo "Tic Tac Toe is coming soon!" ;;
+        *) echo "Unknown command: $cmd. Type 'help' for a list of commands." ;;
     esac
 done
